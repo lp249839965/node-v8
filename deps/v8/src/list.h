@@ -200,23 +200,6 @@ class List {
   DISALLOW_COPY_AND_ASSIGN(List);
 };
 
-
-template<typename T, class P>
-size_t GetMemoryUsedByList(const List<T, P>& list) {
-  return list.length() * sizeof(T) + sizeof(list);
-}
-
-
-class Map;
-class FieldType;
-class Code;
-template<typename T> class Handle;
-typedef List<Map*> MapList;
-typedef List<Code*> CodeList;
-typedef List<Handle<Map> > MapHandleList;
-typedef List<Handle<FieldType> > TypeHandleList;
-typedef List<Handle<Code> > CodeHandleList;
-
 }  // namespace internal
 }  // namespace v8
 

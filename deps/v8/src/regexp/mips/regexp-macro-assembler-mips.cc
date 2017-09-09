@@ -898,7 +898,7 @@ Handle<HeapObject> RegExpMacroAssemblerMIPS::GetCode(Handle<String> source) {
   }
 
   CodeDesc code_desc;
-  masm_->GetCode(&code_desc);
+  masm_->GetCode(isolate(), &code_desc);
   Handle<Code> code = isolate()->factory()->NewCode(
       code_desc, Code::ComputeFlags(Code::REGEXP), masm_->CodeObject());
   LOG(masm_->isolate(),
@@ -1091,7 +1091,7 @@ void RegExpMacroAssemblerMIPS::CallCheckStackGuardState(Register scratch) {
   // Align the stack pointer and save the original sp value on the stack.
   __ mov(scratch, sp);
   __ Subu(sp, sp, Operand(kPointerSize));
-  DCHECK(base::bits::IsPowerOfTwo32(stack_alignment));
+  DCHECK(base::bits::IsPowerOfTwo(stack_alignment));
   __ And(sp, sp, Operand(-stack_alignment));
   __ sw(scratch, MemOperand(sp));
 
@@ -1231,7 +1231,7 @@ void RegExpMacroAssemblerMIPS::SafeCallTarget(Label* name) {
 
 
 void RegExpMacroAssemblerMIPS::Push(Register source) {
-  DCHECK(!source.is(backtrack_stackpointer()));
+  DCHECK(source != backtrack_stackpointer());
   __ Addu(backtrack_stackpointer(),
           backtrack_stackpointer(),
           Operand(-kPointerSize));
@@ -1240,7 +1240,7 @@ void RegExpMacroAssemblerMIPS::Push(Register source) {
 
 
 void RegExpMacroAssemblerMIPS::Pop(Register target) {
-  DCHECK(!target.is(backtrack_stackpointer()));
+  DCHECK(target != backtrack_stackpointer());
   __ lw(target, MemOperand(backtrack_stackpointer()));
   __ Addu(backtrack_stackpointer(), backtrack_stackpointer(), kPointerSize);
 }

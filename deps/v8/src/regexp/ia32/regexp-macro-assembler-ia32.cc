@@ -932,7 +932,7 @@ Handle<HeapObject> RegExpMacroAssemblerIA32::GetCode(Handle<String> source) {
   }
 
   CodeDesc code_desc;
-  masm_->GetCode(&code_desc);
+  masm_->GetCode(masm_->isolate(), &code_desc);
   Handle<Code> code =
       isolate()->factory()->NewCode(code_desc,
                                     Code::ComputeFlags(Code::REGEXP),
@@ -1190,7 +1190,7 @@ void RegExpMacroAssemblerIA32::SafeCallTarget(Label* name) {
 
 
 void RegExpMacroAssemblerIA32::Push(Register source) {
-  DCHECK(!source.is(backtrack_stackpointer()));
+  DCHECK(source != backtrack_stackpointer());
   // Notice: This updates flags, unlike normal Push.
   __ sub(backtrack_stackpointer(), Immediate(kPointerSize));
   __ mov(Operand(backtrack_stackpointer(), 0), source);
@@ -1205,7 +1205,7 @@ void RegExpMacroAssemblerIA32::Push(Immediate value) {
 
 
 void RegExpMacroAssemblerIA32::Pop(Register target) {
-  DCHECK(!target.is(backtrack_stackpointer()));
+  DCHECK(target != backtrack_stackpointer());
   __ mov(target, Operand(backtrack_stackpointer(), 0));
   // Notice: This updates flags, unlike normal Pop.
   __ add(backtrack_stackpointer(), Immediate(kPointerSize));

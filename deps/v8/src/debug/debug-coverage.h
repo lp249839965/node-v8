@@ -16,13 +16,24 @@ namespace internal {
 // Forward declaration.
 class Isolate;
 
+struct CoverageBlock {
+  CoverageBlock(int s, int e, uint32_t c) : start(s), end(e), count(c) {}
+  CoverageBlock() : CoverageBlock(kNoSourcePosition, kNoSourcePosition, 0) {}
+  int start;
+  int end;
+  uint32_t count;
+};
+
 struct CoverageFunction {
   CoverageFunction(int s, int e, uint32_t c, Handle<String> n)
-      : start(s), end(e), count(c), name(n) {}
+      : start(s), end(e), count(c), name(n), has_block_coverage(false) {}
   int start;
   int end;
   uint32_t count;
   Handle<String> name;
+  // Blocks are sorted by start position, from outer to inner blocks.
+  std::vector<CoverageBlock> blocks;
+  bool has_block_coverage;
 };
 
 struct CoverageScript {
@@ -53,6 +64,29 @@ class Coverage : public std::vector<CoverageScript> {
                            v8::debug::Coverage::Mode collectionMode);
 
   Coverage() {}
+};
+
+struct TypeProfileEntry {
+  explicit TypeProfileEntry(
+      int pos, std::vector<v8::internal::Handle<internal::String>> t)
+      : position(pos), types(std::move(t)) {}
+  int position;
+  std::vector<v8::internal::Handle<internal::String>> types;
+};
+
+struct TypeProfileScript {
+  explicit TypeProfileScript(Handle<Script> s) : script(s) {}
+  Handle<Script> script;
+  std::vector<TypeProfileEntry> entries;
+};
+
+class TypeProfile : public std::vector<TypeProfileScript> {
+ public:
+  static TypeProfile* Collect(Isolate* isolate);
+  static void SelectMode(Isolate* isolate, debug::TypeProfile::Mode mode);
+
+ private:
+  TypeProfile() {}
 };
 
 }  // namespace internal

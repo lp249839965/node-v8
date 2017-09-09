@@ -4,7 +4,6 @@
 
 #include "src/compiler/jump-threading.h"
 #include "src/compiler/code-generator-impl.h"
-#include "src/objects-inl.h"
 
 namespace v8 {
 namespace internal {
@@ -196,6 +195,8 @@ void JumpThreading::ApplyForwarding(ZoneVector<RpoNumber>& result,
     }
   }
 }
+
+#undef TRACE
 
 }  // namespace compiler
 }  // namespace internal
